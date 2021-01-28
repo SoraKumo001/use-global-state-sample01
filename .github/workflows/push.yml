@@ -1,0 +1,62 @@
+name: Push branch
+on:
+  push:
+jobs:
+  Modules:
+    name: Modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Package install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn
+  ESLint:
+    name: ESLint
+    needs: Modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Lint
+        run: yarn lint
+  Build:
+    name: Build
+    needs: Modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache modules(yarn.lock)
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('yarn.lock') }}
+          restore-keys: ${{ runner.OS }}-build-${{ env.cache-name }}
+      - name: Build
+        run: yarn build && yarn export
+      - name: Create gh-pages
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        working-directory: ./out
+        run: |
+          git init
+          git config --global user.name $GITHUB_ACTOR
+          git config --global user.email ${GITHUB_ACTOR}@git
+          git remote add origin https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
+          git checkout -b gh-pages
+          git add .
+          git commit -m gh-pages
+          git push -f origin gh-pages
