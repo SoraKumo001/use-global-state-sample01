@@ -18,64 +18,59 @@ Global `setState` that does not require `provider` or `store`
 
 ```tsx
 import { useGlobalState } from '@react-liblary/use-global-state';
+import React from 'react';
 
-interface Props {
-  name: string;
-}
-
-export const Counter = ({ name }: Props) => {
-  const [count, setCount] = useGlobalState<number>(name, 10);
+export const Tall = () => {
+  console.log('Tall');
+  const [value, setValue] = useGlobalState('tall', '170');
   return (
     <div>
-      <button onClick={() => setCount((count) => count - 1)}>-</button>
-      <button onClick={() => setCount(count + 1)}>+</button>
-      {count}
-    </div>
-  );
-};
-```
-
-- `mutate(key,data)`
-
-```tsx
-import { mutate } from '@react-liblary/use-global-state';
-
-interface Props {
-  name: string;
-}
-
-export const InputBox = ({ name }: Props) => {
-  return (
-    <div>
+      Tall:
       <input
-        defaultValue="100"
-        onKeyPress={(e) => {
-          e.key === 'Enter' && mutate(name, Number(e.currentTarget.value));
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
         }}
       />
     </div>
   );
 };
-```
+export const Weight = () => {
+  console.log('Weight');
+  const [value, setValue] = useGlobalState('weight', '60');
+  return (
+    <div style={{ display: 'flex' }}>
+      Weight:
+      <input
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+        }}
+      />
+    </div>
+  );
+};
 
-- Page
-
-```tsx
-import React from 'react';
-import { Counter } from '../components/Counter';
-import { InputBox } from '../components/InputBox';
+export const Bmi = () => {
+  console.log('Bmi');
+  const [tall] = useGlobalState<string>('tall');
+  const [weight] = useGlobalState<string>('weight');
+  return (
+    <div>
+      {isNaN(Number(tall)) || isNaN(Number(weight))
+        ? 'Error'
+        : `BMI:${Math.floor((Number(weight) / Math.pow(Number(tall) / 100, 2)) * 100) / 100}`}
+    </div>
+  );
+};
 
 const Page = () => (
   <>
-    <InputBox name="count1" />
-    <Counter name="count1" />
-    <Counter name="count1" />
-    <hr />
-    <InputBox name="count2" />
-    <Counter name="count2" />
-    <Counter name="count2" />
+    <Bmi />
+    <Tall />
+    <Weight />
   </>
 );
 export default Page;
-
 ```
+
