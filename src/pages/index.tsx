@@ -1,4 +1,4 @@
-import { useGlobalState } from '@react-liblary/use-global-state';
+import { useGlobalState } from '@react-libraries/use-global-state';
 import React from 'react';
 
 export const Tall = () => {

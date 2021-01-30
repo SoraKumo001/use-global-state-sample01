@@ -11,7 +11,7 @@
     "lint:fix": "eslint --fix ./src"
   },
   "devDependencies": {
-    "@react-liblary/use-global-state": "^1.0.3",
+    "@react-libraries/use-global-state": "^1.0.0",
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
